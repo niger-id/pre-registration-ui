@@ -61,6 +61,8 @@ export class DashBoardComponent implements OnInit, OnDestroy {
   languagelabels;
   dataCaptureLabels;
   name = "";
+  firstName = "";
+  lastName = "";
   identityData: any;
   locationHeirarchies: any[];
   mandatoryLanguages: string[];
@@ -136,7 +138,14 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     this.regService.setSameAs("");
     this.name = this.configService.getConfigByKey(
       appConstants.CONFIG_KEYS.preregistration_identity_name
+     );
+     this.firstName = this.configService.getConfigByKey(
+      appConstants.CONFIG_KEYS.preregistration_identity_firstName
     );
+    this.lastName = this.configService.getConfigByKey(
+      appConstants.CONFIG_KEYS.preregistration_identity_lastNname
+    );
+
     await this.getIdentityJsonFormat();
   }
 
@@ -340,27 +349,40 @@ export class DashBoardComponent implements OnInit, OnDestroy {
       dataAvailableLanguages = Utils.reorderLangsForUserPreferredLang(dataAvailableLanguages, this.userPreferredLangCode);
     }
     let applicantName = "";
-    const nameField = applicantResponse["demographicMetadata"][this.name];
-    if (Array.isArray(nameField)) {
-      nameField.forEach(fld => {
+
+  const firstNameField = applicantResponse["demographicMetadata"][this.name.split(",")[0]];
+  const lastNameField = applicantResponse["demographicMetadata"][this.name.split(",")[1]];
+    if (Array.isArray(firstNameField) && Array.isArray(lastNameField)) {
+      firstNameField.forEach(fld => {
         if (fld.language == this.userPreferredLangCode) {
-          applicantName = fld.value;
+          applicantName = fld.value + " ";
+        }
+      });
+      lastNameField.forEach(fld => {
+        if (fld.language == this.userPreferredLangCode) {
+          applicantName = applicantName + fld.value;
         }
       });
       if (applicantName == "" && dataAvailableLanguages.length > 0) {
-        nameField.forEach(fld => {
+        firstNameField.forEach(fld => {
           if (fld.language == dataAvailableLanguages[0]) {
-            applicantName = fld.value;
+            applicantName = fld.value + " ";
+          }
+        });
+        lastNameField.forEach(fld => {
+          if (fld.language == dataAvailableLanguages[0]) {
+            applicantName = applicantName + fld.value;
           }
         });  
       }
     } else {
-      if (nameField)
-      applicantName = nameField;
+      if (firstNameField && lastNameField )
+      applicantName = firstNameField + "  " + lastNameField;
       else 
       applicantName = "";
     }
-    let dataCaptureLanguagesLabels = Utils.getLanguageLabels(JSON.stringify(dataAvailableLanguages), 
+
+    let dataCaptureLanguagesLabels = Utils.getLanguageLabels(JSON.stringify(dataAvailableLanguages),
           localStorage.getItem(appConstants.LANGUAGE_CODE_VALUES));
     const applicant: Applicant = {
       applicationID:
@@ -870,8 +892,9 @@ export class DashBoardComponent implements OnInit, OnDestroy {
           if (response[appConstants.RESPONSE]) {
             userDetails = response[appConstants.RESPONSE].demographicDetails.identity;
             console.log(userDetails);
+            const fullName = userDetails[this.name.split(",")[0]][0].value + " " + userDetails[this.name.split(",")[1]][0].value;
             const notificationDto = new NotificationDtoModel(
-              userDetails[this.name][0].value,
+              fullName,
               prid,
               appDate,
               appDateTime,

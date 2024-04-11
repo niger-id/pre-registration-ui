@@ -31,7 +31,7 @@ import {
   MatKeyboardService,
   MatKeyboardRef,
   MatKeyboardComponent,
-} from "ngx7-material-keyboard";
+} from "@ngx-material-keyboard/core";
 import { LogService } from "src/app/shared/logger/log.service";
 import { FormDeactivateGuardService } from "src/app/shared/can-deactivate-guard/form-guard/form-deactivate-guard.service";
 import { Subscription } from "rxjs";
@@ -118,6 +118,8 @@ export class DemographicComponent
   config = {};
   consentMessage = [];
   titleOnError = "";
+  loggedInId= "";
+  loggedInEmail: boolean;
   dateOfBirthFieldId = "";
   isNavigateToDemographic = false;
   _moment = moment;
@@ -206,6 +208,15 @@ export class DemographicComponent
       if (this.isConsentMessage)
         this.consentDeclaration(); 
     }
+    this.loggedInId = localStorage.getItem("loginId");
+            console.log("logged in id", this.loggedInId);
+            let emailRegex = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+        //     this.transUserForm.patchValue({email: this.loggedInId})
+            if(emailRegex.test(this.loggedInId)){
+            this.userForm.patchValue({email: this.loggedInId})
+            }else{
+            this.userForm.patchValue({phone: this.loggedInId})
+            }
     this.onChangeHandler("");
     if (this.readOnlyMode) {
       this.userForm.disable();
@@ -427,8 +438,9 @@ export class DemographicComponent
         this.showPreviewButton = true;
       }
 
-      this.loginId = localStorage.getItem("loginId");
+      //this.loginId = localStorage.getItem("loginId");
     }
+    this.loginId = localStorage.getItem("loginId");
   }
 
   getPreRegId() {
@@ -2029,7 +2041,32 @@ export class DemographicComponent
       if (field.required === true && !(field.controlType === "fileupload")) {
         requiredFields.push(field.id);
       }
-    });  
+    });
+    //Setting default value
+        /*identity.identity["bloodType"] = [{
+          "language": langCode,
+          "value": "101"
+        }];
+        identity.identity["residenceStatus"] = [{
+          "language": langCode,
+          "value": "NFR"
+        }];
+        identity.identity["state"] = [{
+          "language": langCode,
+          "value": "KAR"
+        }];
+        identity.identity["city"] = [{
+          "language": langCode,
+          "value": "BLR"
+        }];
+        identity.identity["locality"] = [{
+          "language": langCode,
+          "value": "ELC"
+        }];
+
+        identity.identity["postalCode"] = "123";*/
+
+
     const request = {
       langCode: langCode,
       requiredFields: requiredFields,
@@ -2282,4 +2319,16 @@ export class DemographicComponent
   ngOnDestroy(): void {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
+  openPopupModify() {
+                  const body = {
+                        case: "MESSAGE",
+                        title: "SUCCESS",
+                        message: "Data has been modified and saved successfully.",
+                      };
+                      this.dialog.open(DialougComponent, {
+                        width: "400px",
+                        data: body,
+                      });
+                    }
+
 }
