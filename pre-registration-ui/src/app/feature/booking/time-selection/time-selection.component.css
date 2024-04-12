@@ -38,6 +38,7 @@
 
 .time-selection__arrow-text {
   margin: auto;
+  color: #ccc;
   cursor: pointer;
   color: #ff4081;
 }
