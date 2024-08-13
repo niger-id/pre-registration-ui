@@ -30,6 +30,9 @@
   /* UX enhancement */
   padding-left: 4%;
   /* UX enhancement end */
+  max-height: 40px;
+  background-color: #ffff;
+  border-radius: 10px;
 }
 
 .spacer {
@@ -64,6 +67,7 @@
 .header__actions {
   text-transform: none !important;
 }
+
 
 @media (min-width: 670px) {
   .sidenav-button {
