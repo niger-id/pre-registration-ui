@@ -210,7 +210,7 @@
                                   placeholder="{{localeDtFormat}}"
                                   (dateChange)="onDOBChange(field.id);onChangeHandler(field.id);"
                                   [matDatepicker]="dp" />
-                                <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+                                <mat-datepicker-toggle matSuffix [for]="dp" [ngStyle]="{ visibility: 'hidden'}"></mat-datepicker-toggle>
                                 <mat-datepicker #dp></mat-datepicker>
                               </mat-form-field>
                             </div>
