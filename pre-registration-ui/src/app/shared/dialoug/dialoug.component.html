@@ -103,7 +103,7 @@
           </h3>
           <div>
             <div *ngFor="let message of item.fileText">
-              <div>{{ message }}</div>
+              <div [innerHTML]="message"></div> <!-- Render message as HTML -->
             </div>
           </div>
         </div>
